@@ -10,10 +10,10 @@ static struct
     const float max_R  = 10.0;
     const float max_R2 = max_R * max_R;
 
-    const float min_x = -2.0;
-    const float max_x =  2.0;
-    const float min_y = -2.0;
-    const float max_y =  2.0;
+    float min_x = -2.0 ;
+    float max_x =  2.0 ;
+    float min_y = -2.0 ;
+    float max_y =  2.0 ;
 
     const unsigned int width  = 640;
     const unsigned int height = 640;
@@ -32,4 +32,5 @@ static struct
 
 void InitPixelArray (sf::Uint8** array, size_t size);
 void MandelbrotSet (sf::Image &image);
+void MandelbrotSet (sf::Image &image, float offset_x, float offset_y, float scale);
 sf::Color pickColor (int n);
