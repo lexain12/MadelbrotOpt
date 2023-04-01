@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 
@@ -30,5 +31,5 @@ static struct
     printf ("----------\n");
 
 void InitPixelArray (sf::Uint8** array, size_t size);
-void MandelbrotSet (sf::RenderWindow &window);
+void MandelbrotSet (sf::Image &image);
 sf::Color pickColor (int n);

@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "MandelBrot.hpp"
 #include "emmintrin.h"
+#include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 
 using namespace sf;
@@ -11,8 +12,8 @@ int main()
 {
 	sf::RenderWindow window(sf::VideoMode(InitMb.width, InitMb.height), "Mandelbrot");
 
-    sf::Texture texture;
-    sf::Sprite sprite(texture);
+    sf::Image image;
+    image.create(InitMb.width, InitMb.height, sf::Color::Red);
 
     Clock clock;
 
@@ -30,9 +31,15 @@ int main()
 			}
 		}
 
-        MandelbrotSet(window);
+        MandelbrotSet (image);
 
+        sf::Texture texture;
+        texture.loadFromImage (image);
+        sf::Sprite sprite(texture);
+
+        window.draw (sprite);
 		window.display();
+        window.clear();
 
         sf::Time elapsed = clock.restart();
         printf ("FPS %f\n", 1/elapsed.asSeconds());
@@ -45,12 +52,11 @@ int main()
 
 int main ()
 {
-    RenderWindow window;
-
+    Image        image;
 
     while (true)
     {
-        MandelbrotSet(window);
+        MandelbrotSet(image);
         printf ("FPS \n");
     }
 }
@@ -63,10 +69,9 @@ Color pickColor (int n)
 }
 
 #ifndef SSE
-void MandelbrotSet (RenderWindow &window)
+void MandelbrotSet (Image &image)
 {
     int yi = 0;
-    RectangleShape rectangle(Vector2f(1, 1));
 
     for (;yi < InitMb.height; ++yi)
     {
@@ -97,21 +102,18 @@ void MandelbrotSet (RenderWindow &window)
             }
 
 #ifdef VidMode
-            rectangle.setPosition((float) xi, (float) yi);
 
             if (n >= InitMb.max_N)
-                rectangle.setFillColor(Color::Black);
+                image.setPixel(xi, yi, Color::Black);
             else
-                rectangle.setFillColor(pickColor(n));
-
-            window.draw(rectangle);
+                image.setPixel(xi, yi, pickColor(n));
 #endif
         }
     }
 }
 #else
 
-void MandelbrotSet (RenderWindow &window)
+void MandelbrotSet (Image &image)
 {
     float dx    = InitMb.dx;
     float dy    = InitMb.dy;
@@ -126,6 +128,7 @@ void MandelbrotSet (RenderWindow &window)
     __m128 Y0 = _mm_set1_ps (min_y - dy);
     __m128 MAX_R2 = _mm_set1_ps (InitMb.max_R2);
     __m128 MAX_N  = _mm_set1_ps (InitMb.max_N);
+    __m128 Mask1  = _mm_set1_ps (0x0001);
 
     for (;yi < InitMb.height; yi++)
     {
@@ -142,7 +145,6 @@ void MandelbrotSet (RenderWindow &window)
 
             __m128 N      = _mm_set1_ps (0);
             __m128 dN     = _mm_set1_ps (1);
-            __m128 Mask1  = _mm_set1_ps (0x0001);
 
 
             for (int i = 0; i < InitMb.max_N; i++)
@@ -173,14 +175,11 @@ void MandelbrotSet (RenderWindow &window)
 
                 float n = ((float*) &N)[3 - i];
 
-                rectangle.setPosition((float) xi + i, (float) yi);
 
                 if (n >= InitMb.max_N)
-                    rectangle.setFillColor(Color::Black);
+                    image.setPixel (xi + i, yi, Color::Black);
                 else
-                    rectangle.setFillColor(pickColor(n));
-
-                window.draw(rectangle);
+                    image.setPixel (xi + i, yi, pickColor(n));
             }
 #endif
         }
