@@ -1,6 +1,6 @@
 # Mandelbrot optimisation
 ## General information
-In this lab I drawing a Mandelbrot set with sfml library. First, I wrote the simpliest algorithm. Then optimised it, using SSE instructions.
+In this lab I am drawing a Mandelbrot set with sfml library. First, I wrote the simpliest algorithm. Then optimized it, using SSE instructions.
 
 ## Picture of Mandelbrot set
 ![Picture](img/MandelbrotSet.png)
@@ -14,7 +14,7 @@ $z_{n+1} = z_n^2 + c$
 
 To create a visualization of the Mandelbrot set, I colored the points based on how quickly the sequence of numbers diverges. 
 Points that are part of the set are colored black, while points outside the set are colored based on the number of iterations it takes for the sequence to become unbounded.
-So the main part of calucualtion is:
+So the main part of calcualtion is:
 ~~~C++
 while (n < InitMb.max_N && r2 < InitMb.max_R2)
 {
@@ -36,7 +36,7 @@ As you can see, it is very complicated algorithm, that need optimisation.
 
 ## Optimisation
 
-The main idea of optimisation, is to use the SIMD (single instruction, multiple data) instructions. By using this instruction, 
+The main idea of optimization, is to use the SIMD (single instruction, multiple data) instructions. By using this instruction, 
 we can calculate multiple points in one iteration.
 
 In my case, I was using SSE set of instruction, so I could calculate four points in once.
@@ -62,12 +62,12 @@ for (int i = 0; i < InitMb.max_N; i++)
         N = _mm_add_ps (dN, N);
 }
 ~~~
-## Mesurements
+## Measurements
 
 To compare the performance, I use ```sf::Clock```. Dividing 1 by iteration time, I get the FPS. 
 As the perfomance depends from rendering, I turned off it. The results you can see in table below.
 
-| Compilation flags | Optimisation | FPS |
+| Compilation flags | Optimization | FPS |
 |-------------------|--------------|-----|
 | -O0               |     None     | 4   |
 | -O2               |     None     | 8   |
