@@ -16,7 +16,7 @@ To create a visualization of the Mandelbrot set, I colored the points based on h
 Points that are part of the set are colored black, while points outside the set are colored based on the number of iterations it takes for the sequence to become unbounded.
 So the main part of calcualtion is:
 ~~~C++
-while (n < InitMb.max_N && r2 < InitMb.max_R2)
+while (n < 256 && r2 < 100)
 {
     float x2 = x * x;
     float y2 = y * y;
@@ -27,14 +27,14 @@ while (n < InitMb.max_N && r2 < InitMb.max_R2)
     r2 = x2 + y2;
     n += 1;
 }
-    if (n >= InitMb.max_N)
-        image.setPixel(xi, yi, Color::Black);
-    else
-        image.setPixel(xi, yi, pickColor(n));
+if (n >= 256)
+    image.setPixel(xi, yi, Color::Black);
+else
+    image.setPixel(xi, yi, pickColor(n));
 ~~~
-As you can see, it is very complicated algorithm, that need optimisation.
+As you can see, it is very complicated algorithm, that need to be optimized.
 
-## Optimisation
+## Optimization
 
 The main idea of optimization, is to use the SIMD (single instruction, multiple data) instructions. By using this instruction, 
 we can calculate multiple points in one iteration.
@@ -42,7 +42,7 @@ we can calculate multiple points in one iteration.
 In my case, I was using SSE set of instruction, so I could calculate four points in once.
 The code after optimisation:
 ~~~C++
-for (int i = 0; i < InitMb.max_N; i++)
+for (int i = 0; i < 256; i++)
 {
         __m128 X2 = _mm_mul_ps (X, X);
         __m128 Y2 = _mm_mul_ps (Y, Y);
@@ -79,5 +79,5 @@ So the perfomance boost $30/8.5 = 3.53$ time, which I think is pretty good resul
 
 ## Conclusion
 
-Compilation flags are great at speeding up programs, but in some cases they are not enough. This lab work shows this very well. 
-One such way of optimizing is SSE instructions, which is very good and can speed up performance by a factor of 4.
+Compilation flags are great at speeding up programs, but in some cases they are not enough. This lab work shows this. 
+One such way of optimizing is SSE instructions, which can speed up performance by a factor of 4.
