@@ -1,4 +1,4 @@
-# Mandelbrot optimisation
+# Mandelbrot optimization
 ## General information
 In this lab I am drawing a Mandelbrot set with sfml library. First, I wrote the simpliest algorithm. Then optimized it, using SSE instructions.
 
