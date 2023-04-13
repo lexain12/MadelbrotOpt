@@ -1,6 +1,6 @@
 # Mandelbrot optimization
 ## General information
-In this lab I am drawing a Mandelbrot set with sfml library. First, I wrote the simpliest algorithm. Then optimized it, using SSE instructions.
+In this lab I am drawing a Mandelbrot set with sfml library. First, I wrote the simplest algorithm. Then I optimized it using SSE instructions.
 
 ## Picture of Mandelbrot set
 ![Picture](img/MandelbrotSet.png)
@@ -12,7 +12,7 @@ The formula for iteration is:
 
 $z_{n+1} = z_n^2 + c$
 
-To create a visualization of the Mandelbrot set, I colored the points based on how quickly the sequence of numbers diverges. 
+This formula makes a sequence of numbers and to visualize a Mandelbrot set, I colored the points based on how quickly the sequence of numbers diverges. 
 Points that are part of the set are colored black, while points outside the set are colored based on the number of iterations it takes for the sequence to become unbounded.
 So the main part of calcualtion is:
 ~~~C++
@@ -32,14 +32,14 @@ if (n >= 256)
 else
     image.setPixel(xi, yi, pickColor(n));               // pickColor() is a function that return sf::Color based on n.
 ~~~
-As you can see, it is very complicated algorithm, that need to be optimized.
+As you can see, it takes a lot of time to calculate each point. So I decided to optimize.
 
 ## Secret of optimization
 SIMD (Single Instruction Multiple Data) instructions are a type of computer instruction that allows a single instruction to perform the same operation on multiple pieces of data simultaneously. In other words, SIMD instructions allow a processor to perform multiple calculations at once by processing data in parallel, which can result in faster and more efficient processing of large amounts of data. This is often used in applications such as video processing, 3D graphics, and scientific simulations.
 
 ## Optimization
 
-The main idea of optimization is to use the SIMD instructions. By using this instruction, 
+The main idea of optimization is to use SIMD instructions. By using this instruction, 
 we can calculate multiple points in one iteration.
 
 In my case, I was using SSE set of instruction, so I could calculate four points in once.
@@ -67,8 +67,8 @@ for (int i = 0; i < 256; i++)
 ~~~
 ## Measurements
 
-To compare the performance, I use ```sf::Clock```. Dividing 1 by iteration time, I get the FPS. 
-As the perfomance depends from rendering, I turned off it. The results you can see in table below.
+To compare the performance, I use ```sf::Clock```. $1/iteration time = FPS$. 
+Compared with calculations, rendering a picture takes a long time, so I measure FPS without render. The results you can see in table below.
 
 | Compilation flags | Optimization | FPS | Performance |
 |-------------------|--------------|-----|-------------|
@@ -78,9 +78,9 @@ As the perfomance depends from rendering, I turned off it. The results you can s
 | -O2               |     SSE      | 27.5|     3.44    |
 | -Ofast            |     SSE      | 30  |     3.53    |
 
-So the perfomance boost $30/8.5 = 3.53$ time, which I think is pretty good result.
+So the perfomance boost $30/8.5 = 3.53$ time, which is a pretty good result.
 
 ## Conclusion
 
 Compilation flags are great at speeding up programs, but in some cases they are not enough. This lab work shows this. 
-One such way of optimizing is SSE instructions, which can speed up performance by a factor of 4.
+In my case I got $~4x$ performance boost, using all optimization flags.
