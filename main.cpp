@@ -1,16 +1,17 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "MandelBrot.hpp"
-#include "emmintrin.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <emmintrin.h>
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
+
+#include "MandelBrot.hpp"
 
 using namespace sf;
 
 #ifdef VidMode
 int main()
 {
-	sf::RenderWindow window(sf::VideoMode(InitMb.width, InitMb.height), "Mandelbrot");
+    sf::RenderWindow window(sf::VideoMode(InitMb.width, InitMb.height), "Mandelbrot");
 
     sf::Image image;
     image.create(InitMb.width, InitMb.height, sf::Color::Red);
@@ -71,15 +72,14 @@ int main()
 
 	return 0;
 }
-#else
+#else // if videoMode is not defined
 
 int main ()
 {
-    Image        image;
+    Image image;
     float scale = 1;
     float offset_x = 0;
     float offset_y = 0;
-
 
     sf::Clock clock;
     while (true)
@@ -90,24 +90,21 @@ int main ()
     }
 }
 
-#endif
+#endif // end of VideoMode if
 
 Color pickColor (int n)
 {
     return Color(255 - n*5, 5*n, 128 - n*5, 255);
 }
 
-#ifndef SSE
+#ifndef SSE // not SSE optimization
 void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
 {
-    int yi = 0;
-
-    for (;yi < InitMb.height; ++yi)
+    for (int yi = 0;yi < InitMb.height; ++yi)
     {
         float Y0 = InitMb.min_y + yi * InitMb.dy;
 
-        int xi = 0;
-        for (;xi < InitMb.width; ++xi)
+        for (int xi = 0;xi < InitMb.width; ++xi)
         {
             float X0 = InitMb.min_x + xi * InitMb.dx;
 
@@ -115,9 +112,7 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
             float y  = Y0;
             float r2 = x*x + y*y;
 
-
             volatile int n = 0;
-
             while (n < InitMb.max_N && r2 < InitMb.max_R2)
             {
                 float x2 = x*x;
@@ -130,8 +125,7 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
                 n += 1;
             }
 
-#ifdef VidMode
-
+#ifdef VidMode 
             if (n >= InitMb.max_N)
                 image.setPixel(xi, yi, Color::Black);
             else
@@ -140,7 +134,7 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
         }
     }
 }
-#else
+#else // if there is SSE optimization
 
 void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
 {
@@ -149,7 +143,6 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
     float min_y = InitMb.min_y;
     float min_x = InitMb.min_x;
 
-
     __m128 DY = _mm_set1_ps (dy);
     __m128 DX = _mm_set_ps (0, dx, dx*2, dx*3);
     __m128 Y0 = _mm_set1_ps (min_y - dy - offset_y);
@@ -157,13 +150,11 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
     __m128 MAX_N  = _mm_set1_ps (InitMb.max_N);
     __m128 Mask1  = _mm_set1_ps (0x0001);
 
-    int yi = 0;
-    for (;yi < InitMb.height; yi++)
+    for (int yi = 0;yi < InitMb.height; yi++)
     {
         Y0 = _mm_add_ps (Y0, DY);
 
-        int xi = 0;
-        for (;xi < InitMb.width; xi+=4)
+        for (int xi = 0;xi < InitMb.width; xi+=4)
         {
             __m128 X0 = _mm_set1_ps(dx * xi - InitMb.max_x - offset_x);
             X0 = _mm_add_ps (X0, DX);
@@ -173,7 +164,6 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
 
             volatile __m128  N     = _mm_set1_ps (0);
                      __m128 dN     = _mm_set1_ps (1);
-
 
             for (int i = 0; i < InitMb.max_N; i++)
             {
@@ -191,16 +181,13 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
                 Y  = _mm_add_ps (_mm_add_ps (XY, XY), Y0);
 
                 dN = _mm_and_ps(dN, Mask1);
-
                 N = _mm_add_ps (dN, N);
             }
 
 #ifdef VidMode
             for (int i = 0; i < 4; i++)
             {
-
                 float n = ((float*) &N)[3 - i];
-
 
                 if (n >= InitMb.max_N)
                     image.setPixel (xi + i, yi, Color::Black);
