@@ -1,6 +1,6 @@
 # Mandelbrot optimization
 ## General information
-In this lab I am drawing a Mandelbrot set with sfml library. First, I wrote the simplest algorithm. Then I optimized it using SSE instructions.
+In this work I tried to optimize algorithm of drawing Mandelbrot set by using SIMD instructions.
 
 ## Picture of Mandelbrot set
 ![Picture](img/MandelbrotSet.png)
