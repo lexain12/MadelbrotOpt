@@ -12,7 +12,7 @@ The formula for iteration is:
 
 $z_{n+1} = z_n^2 + c$
 
-This formula makes a sequence of numbers. If distance from all points of the sequence is less than maximum, starting point is part of the set. Points of the set are colored black, while points outside the set are colored based on the number of iterations it takes for the sequence to become unbounded.
+This formula makes a sequence of numbers. If distance from all points of the sequence is less than maximum, the starting point is a part of the set. These points of the set are colored black and points outside the set are colored based on the number of iterations it takes for the sequence to become unbounded.
 
 So the main part of calcualtion is:
 ~~~C++
