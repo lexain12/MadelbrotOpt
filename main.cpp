@@ -100,11 +100,11 @@ Color pickColor (int n)
 #ifndef SSE // not SSE optimization
 void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
 {
-    for (int yi = 0;yi < InitMb.height; ++yi)
+    for (int yi = 0; yi < InitMb.height; ++yi)
     {
         float Y0 = InitMb.min_y + yi * InitMb.dy;
 
-        for (int xi = 0;xi < InitMb.width; ++xi)
+        for (int xi = 0; xi < InitMb.width; ++xi)
         {
             float X0 = InitMb.min_x + xi * InitMb.dx;
 
@@ -150,11 +150,11 @@ void MandelbrotSet (Image &image, float offset_x, float offset_y, float scale)
     __m128 MAX_N  = _mm_set1_ps (InitMb.max_N);
     __m128 Mask1  = _mm_set1_ps (0x0001);
 
-    for (int yi = 0;yi < InitMb.height; yi++)
+    for (int yi = 0; yi < InitMb.height; yi++)
     {
         Y0 = _mm_add_ps (Y0, DY);
 
-        for (int xi = 0;xi < InitMb.width; xi+=4)
+        for (int xi = 0; xi < InitMb.width; xi+=4)
         {
             __m128 X0 = _mm_set1_ps(dx * xi - InitMb.max_x - offset_x);
             X0 = _mm_add_ps (X0, DX);
